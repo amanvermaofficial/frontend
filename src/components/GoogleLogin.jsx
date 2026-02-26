@@ -2,7 +2,7 @@ import React from 'react';
 
 const GoogleLogin = () => {
   const googleLogin = () => {
-    window.location.href = "http://127.0.0.1:8000/auth/google";
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
   };
 
   return (
@@ -10,7 +10,7 @@ const GoogleLogin = () => {
       <div className="w-full max-w-md">
         {/* Login Card */}
         <div className="bg-white rounded-2xl shadow-xl border border-amber-200 p-8">
-          
+
           {/* Logo/Title */}
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold mb-2">
