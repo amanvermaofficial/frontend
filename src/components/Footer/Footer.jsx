@@ -21,7 +21,7 @@ function Footer() {
             YouTube
           </a>
           <a
-            href="https://t.me/Itipapers"
+            href="https://t.me/itipapersyt"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-blue-600 transition"
