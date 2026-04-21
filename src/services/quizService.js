@@ -4,8 +4,8 @@ export const getQuizzes = (courseId,tradeId)=>{
     return api.get(`/courses/${courseId}/trades/${tradeId}/quizzes`)
 }
 
-export const getQuizById = (quizId)=>{
-    return api.get(`/quizzes/${quizId}`)
+export const getQuizById = (quizId,lang)=>{
+    return api.get(`/quizzes/${quizId}?lang=${lang}`);
 };
 
 export const submitQuiz = (quizId,answers) =>{

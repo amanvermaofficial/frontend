@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { getQuizById, submitQuiz } from "../../services/quizService";
 import { setResult } from "../../store/quizSlice";
@@ -8,7 +8,8 @@ import { FaQuestionCircle } from "react-icons/fa";
 import { startQuizAttempt } from "../../services/quizService";
 import { useCountdown } from "../../hooks/useCountdown";
 import Swal from "sweetalert2";
-
+import { setLang } from "../../store/langSlice";
+import { FaGlobe } from "react-icons/fa";
 
 function QuizAttempt() {
   const { quizId } = useParams();
@@ -19,7 +20,7 @@ function QuizAttempt() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const [attemptInfo, setAttemptInfo] = useState(null)
-
+  const lang = useSelector((state) => state.lang.lang);
 
   const { timeLeft, formatTime } = useCountdown(attemptInfo?.end_time);
 
@@ -43,7 +44,8 @@ function QuizAttempt() {
         }
         setAttemptInfo(startRes.data?.data);
 
-        const res = await getQuizById(quizId);
+        const res = await getQuizById(quizId, lang);
+        console.log("API RESPONSE:", res.data.data.quiz);
         setQuiz(res.data?.data?.quiz);
       } catch (error) {
         toast.error("Failed to load quiz");
@@ -53,7 +55,7 @@ function QuizAttempt() {
       }
     };
     initializeQuiz();
-  }, [quizId]);
+  }, [quizId, lang]);
 
   useEffect(() => {
     if (timeLeft === 0) handleSubmit(true);
@@ -74,9 +76,9 @@ function QuizAttempt() {
   const handleNext = () => {
     if (isNavigatingRef.current) return;
     isNavigatingRef.current = true;
-    if (currentIndex < quiz.questions.length - 1) {
+    if (currentIndex < questions.length - 1) {
       setCurrentIndex(prev => {
-        const nextIndex = Math.min(prev + 1, quiz.questions.length - 1);
+        const nextIndex = Math.min(prev + 1, questions.length - 1);
         return nextIndex;
       });
 
@@ -92,7 +94,7 @@ function QuizAttempt() {
       text: isAuto
         ? "Time is up! Your quiz will be submitted automatically."
         : "Are you sure you want to submit your answers?",
-      showCancelButton: !isAuto,  
+      showCancelButton: !isAuto,
       icon: "warning",
       confirmButtonText: "OK",
       cancelButtonText: "Cancel",
@@ -103,7 +105,7 @@ function QuizAttempt() {
         try {
           const formattedAnswers = Object.keys(answers).map((questionId) => ({
             question_id: parseInt(questionId),
-            selected_option_id: answers[questionId],
+            selected_option_id: answers[questionId]
           }));
 
           const res = await submitQuiz(quizId, formattedAnswers);
@@ -138,7 +140,7 @@ function QuizAttempt() {
 
   const questions = quiz?.questions || [];
   const question = questions[currentIndex];
-  if (!quiz.questions || quiz.questions.length === 0) {
+  if (!questions.length) {
     return (
       <div className="flex justify-center items-center h-[80vh]">
         <p className="text-gray-600 text-lg">No questions available.</p>
@@ -176,6 +178,29 @@ function QuizAttempt() {
           <div className="text-lg font-semibold tracking-wide">
             ⏱️{timeLeft !== null ? formatTime(timeLeft) : 'Loading..'}
           </div>
+          {/* 🔥 Language Dropdown */}
+          <div className="relative">
+            <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm border border-white/30">
+
+              {/* 🌐 Icon */}
+              <FaGlobe className="text-white text-sm" />
+
+              {/* Dropdown */}
+              <select
+                value={lang}
+                onChange={(e) => dispatch(setLang(e.target.value))}
+                className="bg-transparent text-white text-sm font-medium outline-none cursor-pointer appearance-none pr-4"
+              >
+                <option value="en" className="text-black">English</option>
+                <option value="hi" className="text-black">हिंदी</option>
+              </select>
+
+              {/* Custom Arrow */}
+              <span className="absolute right-2 text-white text-xs pointer-events-none">
+                ▼
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Header */}
@@ -188,35 +213,46 @@ function QuizAttempt() {
 
         {/* Progress */}
         <div className="text-center text-gray-600 mb-6 text-sm sm:text-base">
-          Question {currentIndex + 1} of {quiz.questions.length}
+          Question {currentIndex + 1} of {questions.length}
         </div>
 
         {/* Question */}
         <div className="mb-5">
           <p className="font-semibold text-base sm:text-lg text-gray-900 mb-3 leading-relaxed">
-            {question?.question_text}
+            {lang === "hi"
+              ? question?.question_hi
+              : question?.question_text}
           </p>
 
           <div className="space-y-3">
-            {question?.options?.map((option) => (
-              <label
-                key={option.id}
-                className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-all duration-200 text-sm sm:text-base ${answers[question.id] === option.id
-                  ? "bg-amber-50 border-amber-500 text-amber-700 shadow-sm"
-                  : "bg-white border-gray-300 hover:bg-gray-50"
-                  }`}
-              >
-                <input
-                  type="radio"
-                  name={`question-${question.id}`}
-                  value={option.id}
-                  checked={answers[question.id] === option.id}
-                  onChange={() => handleAnswer(question.id, option.id)}
-                  className="accent-amber-600 h-4 w-4 sm:h-5 sm:w-5"
-                />
-                <span className="text-gray-800">{option.option_text}</span>
-              </label>
-            ))}
+            {question?.options?.map((option, index) => {
+              const optionKey = String.fromCharCode(65 + index);
+
+              return (
+                <label
+                  key={option.id}
+                  className={`flex items-center gap-3 p-3 border rounded-lg ${answers[question.id] === option.id
+                    ? "bg-amber-50 border-amber-500"
+                    : ""
+                    }`}
+                >
+                  <input
+                    type="radio"
+                    name={`question-${question.id}`}
+                    value={option.id}
+                    checked={answers[question.id] === option.id}
+                    onChange={() => handleAnswer(question.id, option.id)}
+                  />
+
+                  <span>
+                    {optionKey}.{" "}
+                    {lang === "hi"
+                      ? option.option_hi
+                      : option.option_text}
+                  </span>
+                </label>
+              );
+            })}
           </div>
         </div>
 
@@ -233,7 +269,7 @@ function QuizAttempt() {
             <div />
           )}
 
-          {currentIndex < quiz.questions.length - 1 ? (
+          {currentIndex < questions.length - 1 ? (
             <button
               onClick={handleNext}
               className="px-5 sm:px-7 py-2 bg-amber-600 text-white rounded-full font-medium hover:bg-amber-700 transition-all text-sm sm:text-base"

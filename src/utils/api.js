@@ -3,7 +3,7 @@ import store from '../store/store'
 import NProgress from 'nprogress';
 
 const api = axios.create({
-    baseURL:'https://api.itipapers.in/api/v1'
+    baseURL: import.meta.env.VITE_API_BASE_URL
 });
 
 api.interceptors.request.use(

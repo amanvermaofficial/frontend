@@ -19,16 +19,9 @@ function Dashboard() {
       const response = await getProfile();
       const user = response.data.data;
       dispatch(setUserData(user));
-
-
+      
       // Profile check
       if (!user.completed_profile) setOpen(true);
-
-      // Dummy recommended data
-      setRecommended([
-        { id: 1, title: "Basic Electrical", category: "Electrician" },
-        { id: 2, title: "Plumbing Starter Kit", category: "Plumber" },
-      ]);
     }
 
     fetchProfile();
