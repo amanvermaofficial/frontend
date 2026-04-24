@@ -220,7 +220,7 @@ function QuizAttempt() {
         <div className="mb-5">
           <p className="font-semibold text-base sm:text-lg text-gray-900 mb-3 leading-relaxed">
             {lang === "hi"
-              ? question?.question_hi
+              ? (question?.question_hi || question?.question_text)
               : question?.question_text}
           </p>
 
@@ -245,9 +245,8 @@ function QuizAttempt() {
                   />
 
                   <span>
-                    {optionKey}.{" "}
                     {lang === "hi"
-                      ? option.option_hi
+                      ? (option.option_hi || option.option_text)
                       : option.option_text}
                   </span>
                 </label>
