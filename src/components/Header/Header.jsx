@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import logo from '../../assets/logo.png'
+import logo from '../../assets/logo.webp'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import ProfileMenu from '../Profile/ProfileMenu'

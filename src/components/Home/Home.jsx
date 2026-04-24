@@ -1,6 +1,6 @@
 import React from "react";
 import { IoIosArrowRoundForward } from "react-icons/io";
-import heroImage from "../../assets/hero.png";
+import heroImage from "../../assets/hero.webp";
 import { motion } from "framer-motion";
 import Courses from "../Courses/Courses";
 import ExploreYoutube from "../Exploreyoutube";
