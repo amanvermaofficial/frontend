@@ -40,16 +40,18 @@ function Header() {
       <div className="backdrop-blur-xl bg-white/10 border-b border-white/20 text-black px-6 md:px-20 py-2 flex justify-between items-center">
 
         {/* Logo */}
-        <div className="flex items-center gap-2">
-          <img src={logo} className="w-14" alt="logo" />
-          <div className="flex flex-col justify-start">
-            <h1 className="text-xl font-bold ">
-              <span className="text-gray-800">ITI</span>
-              <span className="text-amber-600">Papers</span>
-            </h1>
-            <p className="text-sm">Mindset of Growth</p>
-          </div>
-        </div>
+  <a href="https://itipapers.in/" target="_blank" rel="noopener noreferrer">
+  <div className="flex items-center gap-2">
+    <img src={logo} className="w-14" alt="logo" />
+    <div className="flex flex-col justify-start">
+      <h1 className="text-xl font-bold">
+        <span className="text-gray-800">ITI</span>
+        <span className="text-amber-600">Papers</span>
+      </h1>
+      <p className="text-sm">Mindset of Growth</p>
+    </div>
+  </div>
+</a>
 
         {/* Desktop Menu */}
         <div className="hidden md:block">

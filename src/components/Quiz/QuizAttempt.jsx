@@ -47,6 +47,17 @@ function QuizAttempt() {
         const res = await getQuizById(quizId, lang);
         console.log("API RESPONSE:", res.data.data.quiz);
         setQuiz(res.data?.data?.quiz);
+        const savedAnswers = localStorage.getItem(`quiz_answers_${quizId}`);
+        const savedIndex = localStorage.getItem(
+          `quiz_current_${quizId}`
+        );
+
+        if (savedIndex) {
+          setCurrentIndex(Number(savedIndex));
+        }
+        if (savedAnswers) {
+          setAnswers(JSON.parse(savedAnswers));
+        }
       } catch (error) {
         toast.error("Failed to load quiz");
         navigate(-1);
@@ -64,10 +75,18 @@ function QuizAttempt() {
 
 
   const handleAnswer = (questionId, optionId) => {
-    setAnswers((prev) => ({
-      ...prev,
+
+    const updatedAnswers = {
+      ...answers,
       [questionId]: optionId,
-    }));
+    };
+
+    setAnswers(updatedAnswers);
+
+    localStorage.setItem(
+      `quiz_answers_${quizId}`,
+      JSON.stringify(updatedAnswers)
+    );
   };
 
 
@@ -79,6 +98,11 @@ function QuizAttempt() {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(prev => {
         const nextIndex = Math.min(prev + 1, questions.length - 1);
+
+        localStorage.setItem(
+          `quiz_current_${quizId}`,
+          nextIndex
+        );
         return nextIndex;
       });
 
@@ -110,6 +134,8 @@ function QuizAttempt() {
 
           const res = await submitQuiz(quizId, formattedAnswers);
           dispatch(setResult(res.data.data));
+          localStorage.removeItem(`quiz_answers_${quizId}`);
+          localStorage.removeItem(`quiz_current_${quizId}`);
           navigate(`/quiz-result/${quizId}`);
         } catch (error) {
           Swal.fire("Error", "Failed to submit quiz", "error");
