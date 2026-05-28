@@ -38,8 +38,8 @@ function QuizAttempt() {
         const status = startRes.data?.status || startRes.data?.data?.status;
         console.log(status)
         if (status === "COMPLETED") {
-          toast.info("You have already m attempted this quiz");
-          navigate(`/quiz-result/${quizId}`);
+          toast.info("You have already attempted this quiz");
+          navigate(`/quiz-result/${quizId}`, { replace: true });
           return;
         }
         setAttemptInfo(startRes.data?.data);
@@ -136,7 +136,9 @@ function QuizAttempt() {
           dispatch(setResult(res.data.data));
           localStorage.removeItem(`quiz_answers_${quizId}`);
           localStorage.removeItem(`quiz_current_${quizId}`);
-          navigate(`/quiz-result/${quizId}`);
+          navigate(`/quiz-result/${quizId}`, {
+            replace: true
+          });
         } catch (error) {
           Swal.fire("Error", "Failed to submit quiz", "error");
         }
@@ -252,8 +254,7 @@ function QuizAttempt() {
 
           <div className="space-y-3">
             {question?.options?.map((option, index) => {
-              const optionKey = String.fromCharCode(65 + index);
-
+              
               return (
                 <label
                   key={option.id}
